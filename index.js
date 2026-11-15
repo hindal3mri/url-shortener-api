@@ -143,6 +143,46 @@ app.get("/api/urls", async (req, res) => {
     }
 });
 
+// DELETE a shortened URL
+app.delete("/api/urls/:shortCode", async (req, res) => {
+    try {
+        const { shortCode } = req.params;
+
+        const { data, error } = await supabase
+            .from("urls")
+            .delete()
+            .eq("short_code", shortCode)
+            .select("short_code")
+            .maybeSingle();
+
+        if (error) {
+            console.error("Supabase error:", error);
+
+            return res.status(500).json({
+                error: "Failed to delete URL"
+            });
+        }
+
+        if (!data) {
+            return res.status(404).json({
+                error: "Short URL not found"
+            });
+        }
+
+        return res.status(200).json({
+            message: "URL deleted successfully",
+            shortCode: data.short_code
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            error: "Internal server error"
+        });
+    }
+});
+
 // GET short URL and redirect
 app.get("/:shortCode", async (req, res) => {
     try {
