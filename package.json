@@ -1,7 +1,8 @@
+
 {
   "name": "url-shortenerapi",
   "version": "1.0.0",
-  "description": "URL Shortener API built with Node.js, Express, and Supabase",
+  "description": "A secure URL Shortener API with user authentication built using Node.js, Express, and Supabase",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -11,11 +12,18 @@
     "url-shortener",
     "nodejs",
     "express",
-    "supabase"
+    "supabase",
+    "authentication",
+    "jwt",
+    "postgresql",
+    "rest-api"
   ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",
     "dotenv": "^18.0.10",
