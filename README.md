@@ -1,26 +1,23 @@
 # URL Shortener API
 
-A RESTful URL Shortener API built with **Node.js**, **Express.js**, and **Supabase (PostgreSQL)**. The API supports user authentication, user-owned short links, public redirection, and click tracking.
+A RESTful URL Shortener API built with **Node.js**, **Express.js**, and **Supabase (PostgreSQL)**. The API creates short links, redirects visitors to their original URLs, tracks clicks, and supports retrieving and deleting URLs.
 
 ## Features
 
-- Register users with email and password.
-- Authenticate users using Supabase Auth.
-- Refresh access and refresh tokens.
 - Create short URLs from valid HTTP and HTTPS links.
 - Generate unique short codes automatically.
 - Validate submitted URLs.
-- Retrieve only the authenticated user's URLs.
-- Delete only URLs owned by the authenticated user.
-- Redirect visitors without requiring authentication.
-- Track successful short-link visits.
-- Enforce user-level access with Row Level Security (RLS).
+- Retrieve all stored URLs.
+- Delete a short URL using its short code.
+- Redirect visitors to the original URL.
+- Track successful redirects with click counts.
+- Store URL data in Supabase PostgreSQL.
+- Handle duplicate short-code collisions.
 
 ## Tech Stack
 
 - Node.js 22 or later
 - Express.js
-- Supabase Auth
 - Supabase PostgreSQL
 - Postman
 - Git and GitHub
@@ -29,7 +26,7 @@ A RESTful URL Shortener API built with **Node.js**, **Express.js**, and **Supaba
 
 - [Node.js](https://nodejs.org/) version 22 or later
 - npm
-- A Supabase project with the Email provider enabled
+- A Supabase project
 - [Postman](https://www.postman.com/) for API testing
 
 ## Installation and Setup
@@ -37,8 +34,8 @@ A RESTful URL Shortener API built with **Node.js**, **Express.js**, and **Supaba
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/hindal3mri/url-shortener-api.git url-shortenerapi
-cd url-shortenerapi
+git clone https://github.com/hindal3mri/url-shortener-api.git
+cd url-shortener-api
 ```
 
 ### 2. Install dependencies
@@ -47,17 +44,12 @@ cd url-shortenerapi
 npm install
 ```
 
-### 3. Configure Supabase
+### 3. Configure the Database
 
 1. Open your Supabase project.
-2. Navigate to SQL Editor.
-3. Run the SQL in `schema.sql`.
-4. Make sure the Email provider is enabled under Authentication → Sign In / Providers.
-5. Configure email confirmation according to your application requirements.
-
-The database uses the `user_id` column to associate each URL with its owner.
-
-Existing records created before authentication can remain in the database with a null `user_id`. They are not included in any user's personal URL list, but their short links can still redirect.
+2. Navigate to the SQL Editor.
+3. Run the SQL script from `schema.sql`.
+4. Make sure the `urls` table and click-tracking function are created successfully.
 
 ### 4. Configure Environment Variables
 
@@ -65,14 +57,14 @@ Create a `.env` file in the project root:
 
 ```env
 SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
-SUPABASE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
+SUPABASE_KEY=YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY
 PORT=3000
 BASE_URL=http://localhost:3000
 ```
 
 Replace the placeholder values with your Supabase project settings.
 
-Never commit `.env`, access tokens, refresh tokens, passwords, or privileged Supabase keys to source control.
+Never commit `.env` or privileged Supabase keys to source control.
 
 ## Run the Server
 
@@ -94,84 +86,27 @@ The local API is available at:
 http://localhost:3000
 ```
 
-## Authentication
-
-The API uses Supabase Auth.
-
-Protected endpoints require an access token in the Authorization header:
-
-```http
-Authorization: Bearer YOUR_ACCESS_TOKEN
-```
-
-### 1. Sign Up
-
-**POST** `/api/auth/signup`
-
-Request body:
-
-```json
-{
-  "email": "user@example.com",
-  "password": "ChooseA_StrongPassword"
-}
-```
-
-Successful response: `201 Created`.
-
-Email confirmation may be required depending on the Supabase configuration. If confirmation is required, the API returns the user without an active session.
-
-### 2. Login
-
-**POST** `/api/auth/login`
-
-Request body:
-
-```json
-{
-  "email": "user@example.com",
-  "password": "ChooseA_StrongPassword"
-}
-```
-
-Successful response: `200 OK`.
-
-Returns the user details, `accessToken`, and `refreshToken`.
-
-### 3. Refresh Access Token
-
-**POST** `/api/auth/refresh`
-
-Request body:
-
-```json
-{
-  "refreshToken": "YOUR_REFRESH_TOKEN"
-}
-```
-
-Successful response: `200 OK`.
-
-Returns a new access token and refresh token.
-
 ## API Endpoints
 
-| Method | Endpoint | Authentication | Description |
-|---|---|---|---|
-| GET | `/` | Public | Health check |
-| POST | `/api/auth/signup` | Public | Register a user |
-| POST | `/api/auth/login` | Public | Sign in |
-| POST | `/api/auth/refresh` | Refresh token | Refresh session tokens |
-| POST | `/api/urls` | Required | Create a short URL |
-| GET | `/api/urls` | Required | List the current user's URLs |
-| DELETE | `/api/urls/:shortCode` | Required | Delete an owned URL |
-| GET | `/:shortCode` | Public | Redirect and track clicks |
+All API endpoints are public and do not require authentication.
 
-### 1. Create a Short URL
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Check API status |
+| POST | `/api/urls` | Create a short URL |
+| GET | `/api/urls` | Retrieve all URLs |
+| DELETE | `/api/urls/:shortCode` | Delete a URL |
+| GET | `/:shortCode` | Redirect and track clicks |
+
+### 1. Health Check
+
+**GET** `/`
+
+Checks whether the API is running.
+
+### 2. Create a Short URL
 
 **POST** `/api/urls`
-
-Requires an access token.
 
 Request body:
 
@@ -181,7 +116,7 @@ Request body:
 }
 ```
 
-Successful response: `201 Created`.
+Successful response: `201 Created`
 
 ```json
 {
@@ -194,48 +129,20 @@ Successful response: `201 Created`.
 
 Possible errors:
 
-- `400 Bad Request`: Invalid URL.
-- `401 Unauthorized`: Missing or invalid access token.
+- `400 Bad Request`: Invalid or missing URL.
 - `500 Internal Server Error`: Database error or failure to generate a unique short code.
 
-### 2. Get the Current User's URLs
+### 3. Retrieve All URLs
 
 **GET** `/api/urls`
 
-Requires an access token.
-
-Returns only the URLs belonging to the authenticated user.
+Returns the stored URLs, including their short codes, original URLs, click counts, and creation timestamps.
 
 Successful response: `200 OK`.
 
-```json
-{
-  "count": 1,
-  "urls": [
-    {
-      "long_url": "https://www.example.com/",
-      "short_code": "a1b2c3d4",
-      "clicks": 3,
-      "created_at": "2026-11-16T09:00:00+00:00"
-    }
-  ]
-}
-```
-
-If the user has no URLs:
-
-```json
-{
-  "count": 0,
-  "urls": []
-}
-```
-
-### 3. Delete a Short URL
+### 4. Delete a Short URL
 
 **DELETE** `/api/urls/:shortCode`
-
-Requires an access token.
 
 Example:
 
@@ -252,13 +159,11 @@ Successful response: `200 OK`.
 }
 ```
 
-If the short code does not exist or belongs to another user, the API returns `404 Not Found`.
+If the short code does not exist, the API returns `404 Not Found`.
 
-### 4. Redirect to the Original URL
+### 5. Redirect to the Original URL
 
 **GET** `/:shortCode`
-
-This endpoint is public and does not require authentication.
 
 Example:
 
@@ -266,11 +171,13 @@ Example:
 GET /a1b2c3d4
 ```
 
-- Existing short codes return `302 Found` and redirect to the original destination.
-- Each successful visit increments the click count.
+- Existing short codes return `302 Found` and redirect to the original URL.
+- Each successful redirect increments the click count.
 - Unknown short codes return `404 Not Found`.
 
-## Database Design and Access Control
+**Note:** Postman may automatically follow redirects and display the destination's response instead of the original `302` response. Disable automatic redirect following in Postman to inspect the `302` status and `Location` header.
+
+## Database Design
 
 The project uses a Supabase table named `public.urls`.
 
@@ -281,42 +188,36 @@ The project uses a Supabase table named `public.urls`.
 | `short_code` | VARCHAR(20) | Unique short code |
 | `clicks` | INTEGER | Number of successful redirects |
 | `created_at` | TIMESTAMPTZ | Record creation timestamp |
-| `user_id` | UUID | URL owner, references `auth.users(id)` |
 
-Row Level Security (RLS) is enabled.
+Row Level Security (RLS) is enabled. The database has policies that allow anonymous users to insert, select, and delete URL records.
 
-Authenticated users can insert, view, and delete only their own URLs using `auth.uid() = user_id`.
-
-Anonymous users have no direct table privileges. Public redirects use the `increment_url_clicks` database function, which runs with `SECURITY DEFINER` privileges and a restricted search path.
+The `increment_url_clicks` database function updates the click count and returns the original URL for redirection.
 
 ## Postman Testing
 
-The API was exercised with Postman.
+The API can be tested using Postman.
 
-Observed successful cases included:
+Important test cases include:
 
-| Test | Observed Result |
+| Test Case | Expected Result |
 |---|---|
-| Register a test account | `201 Created` |
-| Login with a confirmed account | `200 OK` |
-| Create a URL as an authenticated user | `201 Created` |
-| Retrieve the owner's URLs | `200 OK` |
-| Retrieve URLs as another user | `200 OK` with an empty list |
-| Create a URL as the second user | `201 Created` |
-| Delete the second user's URL | `200 OK` |
-| Retrieve URLs after deletion | `200 OK` with an empty list |
-
-Earlier project tests also covered invalid URL input, missing URL input, unknown short codes, redirection, and click tracking.
+| Check API status | `200 OK` |
+| Create a URL with valid input | `201 Created` |
+| Submit an invalid URL | `400 Bad Request` |
+| Submit a request without `longUrl` | `400 Bad Request` |
+| Retrieve all URLs | `200 OK` |
+| Redirect using an existing short code | `302 Found` |
+| Redirect using an unknown short code | `404 Not Found` |
+| Delete an existing short code | `200 OK` |
+| Delete the same short code again | `404 Not Found` |
+| Verify click tracking | Click count increases after a successful redirect |
 
 ## Security Notes
 
 - Keep `.env` out of Git using `.gitignore`.
-- Never commit passwords, access tokens, refresh tokens, or Supabase secret/service-role keys.
-- Use the access token in the Authorization header for protected endpoints.
-- RLS enforces URL ownership at the database level.
-- Public visitors can redirect using a known short code but cannot directly access the URLs table.
-- The click-tracking function uses `SECURITY DEFINER`; keep its implementation narrowly scoped.
-- Legacy records with a null `user_id` are not listed under user accounts but remain redirectable.
+- Never commit Supabase secret or service-role keys.
+- URL creation, listing, and deletion are public operations in this assignment's no-auth scope.
+- Because these operations are public, anyone with API access can view or delete stored URLs. This configuration is intended for the assignment scope, not as a production access-control model.
 
 ## Git Ignore
 
@@ -330,7 +231,7 @@ node_modules/
 ## Project Structure
 
 ```text
-url-shortenerapi/
+url-shortener-api/
 ├── .gitignore
 ├── index.js
 ├── package.json
