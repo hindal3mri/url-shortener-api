@@ -1,0 +1,471 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+
+:root {
+  font-family: 'Cairo', sans-serif;
+  color: #f8fafc;
+  background: #05070b;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #05070b;
+  font-family: 'Cairo', sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Main page */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 75% 22%, #102b50 0%, transparent 35%),
+    radial-gradient(ellipse at 15% 65%, #0b1d36 0%, transparent 40%),
+    linear-gradient(145deg, #080b11, #030508 75%);
+  isolation: isolate;
+}
+
+/* Decorative waves */
+.page::before,
+.page::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  width: 75%;
+  height: 350px;
+  border: 1px solid #1d4c83;
+  border-radius: 50%;
+  background: linear-gradient(120deg, #102b4c88, #07101c22);
+  transform: rotate(-12deg);
+  filter: blur(1px);
+}
+
+.page::before {
+  top: 190px;
+  right: -35%;
+}
+
+.page::after {
+  top: 390px;
+  left: -45%;
+  transform: rotate(15deg);
+}
+
+/* Navigation */
+.navbar {
+  width: min(1200px, 90%);
+  margin: 0 auto;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ffffff16;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.brand-logo {
+  display: block;
+  width: 210px;
+  height: 75px;
+  object-fit: contain;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Language button */
+.language-button {
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  color: #60a5fa;
+  font-size: 15px;
+  font-weight: 700;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.language-button:hover {
+  color: #a5d4ff;
+  transform: translateY(-2px);
+}
+
+/* Hero */
+.hero {
+  width: min(780px, 90%);
+  margin: auto;
+  padding: 65px 0 75px;
+  text-align: center;
+  position: relative;
+}
+
+.hero h1 {
+  margin: 24px 0 12px;
+  color: #f8fafc;
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 800;
+}
+
+.hero h1 span {
+  display: block;
+  color: #56aaff;
+  text-shadow: 0 0 25px #168bff33;
+}
+
+.hero-description {
+  max-width: 600px;
+  margin: 0 auto 32px;
+  color: #a7b4c8;
+  font-size: 15px;
+  line-height: 1.9;
+  text-align: center;
+}
+
+/* URL form */
+.shortener-form {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Transparent URL input */
+.shortener-form input {
+  flex: 1;
+  min-width: 0;
+  min-height: 58px;
+  padding: 16px 20px;
+  border: 1px solid rgba(112, 153, 201, 0.28);
+  border-radius: 14px;
+  outline: none;
+  background: rgba(15, 27, 43, 0.28);
+  color: #f8fafc;
+  font-size: 15px;
+  text-align: left;
+  color-scheme: dark;
+  caret-color: #56aaff;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.shortener-form input:hover {
+  border-color: rgba(112, 169, 230, 0.45);
+  background: rgba(15, 27, 43, 0.4);
+}
+
+.shortener-form input:focus {
+  border-color: rgba(56, 151, 255, 0.7);
+  background: rgba(15, 27, 43, 0.5);
+  box-shadow: 0 0 0 3px rgba(22, 139, 255, 0.08);
+}
+
+.shortener-form input::placeholder {
+  color: #8593a8;
+  opacity: 1;
+}
+
+/* Prevent white autofill background */
+.shortener-form input:-webkit-autofill,
+.shortener-form input:-webkit-autofill:hover,
+.shortener-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fafc;
+  -webkit-box-shadow: 0 0 0 1000px #101a29 inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Shorten button */
+.shortener-form button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  padding: 0 28px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #168bff, #1748d1);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 5px 22px #167aff25;
+  transition: 0.2s ease;
+}
+
+.shortener-form button:hover {
+  background: linear-gradient(135deg, #42a5ff, #2160ec);
+  transform: translateY(-2px);
+}
+
+.shortener-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+/* Messages */
+.error-message {
+  margin: 14px 4px 0;
+  color: #ff727c;
+  text-align: left;
+  font-size: 13px;
+}
+
+.loading-message {
+  color: #62b5ff;
+  font-size: 13px;
+}
+
+/* Result */
+.result-card {
+  margin-top: 22px;
+  padding: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  border: 1px solid #34455c;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #151e2a, #0d131d);
+  box-shadow: 0 12px 35px #00000055;
+  text-align: left;
+}
+
+.result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.result-label {
+  color: #a5b4c9;
+  font-size: 12px;
+}
+
+.result-info a {
+  overflow-wrap: anywhere;
+  color: #5bb0ff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.result-info a:hover {
+  color: #9bd0ff;
+}
+
+.copy-button {
+  flex-shrink: 0;
+  padding: 10px 17px;
+  border: 1px solid #42546d;
+  border-radius: 10px;
+  background: #192536;
+  color: #e5efff;
+  font-size: 12px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.copy-button:hover {
+  border-color: #328fff;
+  background: #203b5d;
+}
+
+/* Benefits */
+.trust-note {
+  width: min(720px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin: 38px auto 0;
+}
+
+.benefit-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  transition: transform 0.25s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-3px);
+}
+
+.benefit-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: #56aaff;
+  font-size: 25px;
+}
+
+.benefit-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.benefit-text strong {
+  color: #eaf3ff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.benefit-text span {
+  color: #899bb3;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Footer */
+.footer {
+  padding: 20px 15px;
+  border-top: 1px solid #ffffff18;
+  text-align: center;
+  color: #7f8da2;
+  font-size: 11px;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Arabic layout */
+.page[dir="rtl"] {
+  direction: rtl;
+}
+
+.page[dir="rtl"] .error-message,
+.page[dir="rtl"] .shortener-form input {
+  text-align: right;
+}
+
+.page[dir="rtl"] .hero h1 {
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+
+.page[dir="rtl"] .hero-description {
+  text-align: center;
+}
+
+.page[dir="rtl"] .result-card {
+  text-align: right;
+}
+
+.page[dir="rtl"] .trust-note {
+  direction: rtl;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .navbar {
+    min-height: 75px;
+  }
+
+  .brand-logo {
+    width: 155px;
+    height: 60px;
+  }
+
+  .language-button {
+    padding: 7px 4px;
+  }
+
+  .hero {
+    padding: 55px 0 65px;
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 7vw, 36px);
+    line-height: 1.5;
+  }
+
+  .hero-description {
+    font-size: 13px;
+    margin-bottom: 27px;
+  }
+
+  .shortener-form {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .shortener-form input {
+    width: 100%;
+    min-height: 52px;
+  }
+
+  .shortener-form button {
+    width: 100%;
+    min-height: 52px;
+  }
+
+  .result-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .copy-button {
+    min-height: 42px;
+  }
+
+  .trust-note {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .benefit-card {
+    padding: 8px 4px;
+  }
+}
