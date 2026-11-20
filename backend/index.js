@@ -9,6 +9,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
+function buildShortUrl(shortCode) {
+    const baseUrl = BASE_URL.replace(/\/+$/, "");
+    return `${baseUrl}/${shortCode}`;
+}
+
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_KEY
@@ -84,7 +89,7 @@ app.post("/api/urls", async (req, res) => {
                     message: "URL shortened successfully",
                     longUrl: data.long_url,
                     shortCode: data.short_code,
-                    shortUrl: `${BASE_URL}/${data.short_code}`
+                    shortUrl: buildShortUrl(data.short_code)
                 });
             }
 
@@ -127,7 +132,13 @@ app.get("/api/urls", async (req, res) => {
 
         return res.status(200).json({
             count: data.length,
-            urls: data
+            urls: data.map((url) => ({
+                longUrl: url.long_url,
+                shortCode: url.short_code,
+                shortUrl: buildShortUrl(url.short_code),
+                clicks: url.clicks,
+                createdAt: url.created_at
+            }))
         });
     } catch (error) {
         console.error(error);
