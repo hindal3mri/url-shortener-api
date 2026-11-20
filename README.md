@@ -1,59 +1,23 @@
-# Shortly — URL Shortener
+# Shortly — Frontend
 
-A full-stack URL Shortener application that transforms long URLs into short, shareable links.
-
-## Overview
-
-Shortly provides a simple and efficient way to shorten long URLs, manage shortened links, and redirect users to their original destinations.
-
-The project includes a RESTful backend API and a responsive frontend interface.
+The frontend of Shortly, a responsive URL Shortener application built with React and Vite.
 
 ## Features
 
-- Generate unique short URLs automatically.
-- Validate submitted URLs.
-- Redirect users to original URLs.
-- Track link clicks.
-- View and manage shortened URLs.
-- Copy shortened links with one click.
-- Loading and error states.
-- Arabic and English language support.
-- Responsive user interface.
+- Shorten long URLs through the backend API.
+- Display generated short links.
+- Copy shortened URLs with one click.
+- Validate URL input and display error messages.
+- Show loading feedback while processing requests.
+- Support Arabic and English languages.
+- Responsive design for different screen sizes.
 
 ## Tech Stack
 
-### Backend
-
-- Node.js
-- Express.js
-- Supabase (PostgreSQL)
-- JavaScript
-
-### Frontend
-
 - React
-- Vite
 - JavaScript
+- Vite
 - CSS
-
-## Project Structure
-
-```text
-url-shortener-project/
-├── backend/
-│   ├── index.js
-│   ├── schema.sql
-│   ├── package.json
-│   └── README.md
-│
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   ├── package.json
-│   └── README.md
-│
-└── README.md
-```
 
 ## Getting Started
 
@@ -61,64 +25,47 @@ url-shortener-project/
 
 - Node.js
 - npm
-- A Supabase project
 
-### 1. Clone the repository
+### Installation
 
-```bash
-git clone https://github.com/hindal3mri/url-shortener-api.git
-cd url-shortener-api
-```
-
-### 2. Set up the Backend
-
-```bash
-cd backend
-npm install
-```
-
-Create a `.env` file inside the `backend` folder and configure your Supabase credentials.
-
-```env
-SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_key
-PORT=3000
-BASE_URL=http://localhost:3000
-```
-
-Run the backend:
-
-```bash
-npm start
-```
-
-### 3. Set up the Frontend
-
-Open another terminal:
+From the project root, navigate to the frontend folder:
 
 ```bash
 cd frontend
 npm install
+```
+
+### Run the Development Server
+
+```bash
 npm run dev
 ```
 
-Open the local URL displayed by Vite in your browser.
+Open the local URL provided by Vite in your browser.
 
-## API Endpoints
+## Backend Connection
 
-| Method | Endpoint               | Description                  |
-| ------ | ---------------------- | ---------------------------- |
-| GET    | `/`                    | Check API status             |
-| POST   | `/api/urls`            | Create a short URL           |
-| GET    | `/api/urls`            | Retrieve URLs                |
-| GET    | `/:shortCode`          | Redirect to the original URL |
-| DELETE | `/api/urls/:shortCode` | Delete a shortened URL       |
+The frontend communicates with the Shortly backend API.
 
-## Security
+Make sure the backend server is running locally on port `3000` before testing URL shortening.
 
-Environment variables are used to keep database credentials out of the source code. The `.env` file should never be committed to Git.
+## Project Structure
+
+```text
+frontend/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── App.jsx
+│   ├── App.css
+│   ├── index.css
+│   ├── main.jsx
+│   └── translations.js
+├── index.html
+├── package.json
+└── vite.config.js
+```
 
 ## Author
 
-**Hind Alamri**
-
+Hind Alamri
