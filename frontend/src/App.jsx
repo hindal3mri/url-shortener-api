@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import './App.css'
 import translations from './translations'
@@ -13,18 +12,6 @@ function App() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
-
-  const descriptions = isArabic
-    ? [
-        'للاستخدام في أي وقت',
-        'ابدأ مباشرة دون حساب',
-        'روابطك جاهزة خلال ثوانٍ',
-      ]
-    : [
-        'Free to use anytime',
-        'Start without an account',
-        'Your links ready in seconds',
-      ]
 
   const icons = ['✧', '↗', 'ϟ']
 
@@ -146,7 +133,7 @@ function App() {
           />
 
           <button type="submit" disabled={loading}>
-            {loading ? t.loading : t.shorten}
+            {t.shorten}
           </button>
         </form>
 
@@ -191,7 +178,7 @@ function App() {
 
               <div className="benefit-text">
                 <strong>{benefit}</strong>
-                <span>{descriptions[index]}</span>
+                <span>{t.benefitDescriptions[index]}</span>
               </div>
             </div>
           ))}
@@ -199,7 +186,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        © {new Date().getFullYear()} Shortly. Simple links, made easy.
+        © {new Date().getFullYear()} {t.footer}
       </footer>
     </div>
   )
