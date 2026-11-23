@@ -18,6 +18,7 @@ frontend/
 │   └── shortly-logo.png
 ├── src/
 │   ├── components/
+│   │   ├── ConfirmModal.jsx
 │   │   ├── Dashboard.jsx
 │   │   ├── EmptyState.jsx
 │   │   └── LinkCard.jsx
@@ -77,7 +78,8 @@ The dashboard loads links from the backend and shows total link count, total cli
 
 - Short URL and original URL links can be opened in a new tab.
 - The copy action copies the short URL using the browser Clipboard API and reports copy failures.
-- The delete action asks for confirmation before sending a delete request. Successful deletion removes that card from the current view.
+- The delete action opens the reusable [`ConfirmModal.jsx`](src/components/ConfirmModal.jsx) before sending a delete request. The modal identifies the selected short URL, provides Cancel and Delete actions, and supports Escape and focus navigation. Cancel or backdrop dismissal closes the modal without deleting. While a deletion request is in progress, confirmation controls are disabled.
+- Successful deletion removes that card from the current view.
 - The initial order is newest first, as returned by the API. The sort button switches to descending click-count order and can be pressed again to restore the initial order. Sorting is disabled when fewer than two links are available.
 - When loading succeeds and no links exist, the dashboard displays an empty state. Loading and request errors are also displayed.
 - A “New Link” action returns to the Home view.
@@ -92,11 +94,13 @@ The frontend uses relative API paths so Vite can proxy them to the local backend
 | `GET /api/urls` | Load dashboard links and click counts |
 | `DELETE /api/urls/:shortCode` | Delete a selected link after confirmation |
 
+URL data is normalized in [`src/services/urls.js`](src/services/urls.js). `getLinks()` validates the `GET /api/urls` response, maps each backend record to the frontend fields `longUrl`, `shortCode`, `shortUrl`, `clicks`, and `createdAt`, and converts missing short URLs to an empty string and click counts to numbers. The Dashboard uses this normalized result directly. It does not add a second response mapping layer.
+
 After a successful creation, the frontend updates its dashboard refresh state so the list is reloaded when the Dashboard view is opened. Short URL links point to the backend host included in the API response, where the backend handles redirection and click tracking.
 
 ## Language and text direction
 
-The language switcher toggles between English and Arabic. Interface labels and messages for the home view, navigation, and dashboard are defined in [`src/translations.js`](src/translations.js). The selection is held in React state and is not saved across page reloads.
+The language switcher toggles between English and Arabic. Interface labels and messages for the home view, navigation, dashboard, and confirmation modal are defined in [`src/translations.js`](src/translations.js). The selection is held in React state and is not saved across page reloads.
 
 The application sets its page direction to LTR for English and RTL for Arabic. Dashboard content and link cards follow the selected direction; URL anchors are explicitly kept LTR so links remain readable.
 
@@ -104,6 +108,6 @@ The application sets its page direction to LTR for English and RTL for Arabic. D
 
 - [`src/theme.css`](src/theme.css) defines shared CSS custom properties for colors, typography, spacing, layout widths, radii, shadows, and transitions.
 - [`src/index.css`](src/index.css) provides global sizing and focus styles and imports the Cairo font.
-- [`src/App.css`](src/App.css) contains Navbar, home, dashboard, link-card, and responsive layout styles.
+- [`src/App.css`](src/App.css) contains Navbar, home, dashboard, link-card, confirmation modal, and responsive layout styles.
 
 The same theme variables and shared styles are used by both application views.
