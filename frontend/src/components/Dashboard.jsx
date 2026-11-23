@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { deleteLink, getLinks } from '../services/urls'
 import translations from '../translations'
+import ConfirmModal from './ConfirmModal'
 import EmptyState from './EmptyState'
 import LinkCard from './LinkCard'
 
@@ -10,6 +11,8 @@ function Dashboard({ language = 'en', refreshKey = 0, onNewLink }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [sortByClicks, setSortByClicks] = useState(false)
+  const [linkPendingDeletion, setLinkPendingDeletion] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     let isActive = true
@@ -19,15 +22,7 @@ function Dashboard({ language = 'en', refreshKey = 0, onNewLink }) {
         const data = await getLinks()
 
         if (isActive) {
-          setLinks(
-            data.map((link) => ({
-              longUrl: link.longUrl,
-              shortCode: link.shortCode,
-              shortUrl: link.shortUrl,
-              clicks: link.clicks,
-              createdAt: link.createdAt,
-            }))
-          )
+          setLinks(data)
           setError(null)
         }
       } catch {
@@ -68,11 +63,19 @@ function Dashboard({ language = 'en', refreshKey = 0, onNewLink }) {
     null
   )
 
-  const handleDelete = async (shortCode) => {
-    if (!window.confirm(t.deleteConfirm)) {
+  const handleCancelDelete = useCallback(() => {
+    if (!isDeleting) {
+      setLinkPendingDeletion(null)
+    }
+  }, [isDeleting])
+
+  const handleConfirmDelete = async () => {
+    if (!linkPendingDeletion) {
       return
     }
 
+    const shortCode = linkPendingDeletion.shortCode
+    setIsDeleting(true)
     setError(null)
 
     try {
@@ -80,8 +83,12 @@ function Dashboard({ language = 'en', refreshKey = 0, onNewLink }) {
       setLinks((currentLinks) =>
         currentLinks.filter((link) => link.shortCode !== shortCode)
       )
+      setLinkPendingDeletion(null)
     } catch {
       setError('delete')
+      setLinkPendingDeletion(null)
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -214,11 +221,24 @@ function Dashboard({ language = 'en', refreshKey = 0, onNewLink }) {
               link={link}
               language={language}
               translations={t}
-              onDelete={() => handleDelete(link.shortCode)}
+              onDelete={() => setLinkPendingDeletion(link)}
             />
           ))}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={Boolean(linkPendingDeletion)}
+        title={t.deleteConfirmTitle}
+        message={t.deleteConfirm}
+        itemName={linkPendingDeletion?.shortUrl || linkPendingDeletion?.shortCode}
+        cancelLabel={t.cancel}
+        confirmLabel={t.deleteLink}
+        deletingLabel={t.deleting}
+        isDeleting={isDeleting}
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
     </section>
   )
 }

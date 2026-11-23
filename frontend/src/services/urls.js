@@ -13,11 +13,11 @@ export async function getLinks() {
   }
 
   const links = data.urls.map((link) => ({
-    longUrl: link.longUrl ?? link.long_url,
-    shortCode: link.shortCode ?? link.short_code,
-    shortUrl: link.shortUrl ?? '',
-    clicks: link.clicks,
-    createdAt: link.createdAt ?? link.created_at,
+    longUrl: link.longUrl,
+    shortCode: link.shortCode,
+    shortUrl: link.shortUrl || '',
+    clicks: Number(link.clicks) || 0,
+    createdAt: link.createdAt,
   }))
 
   if (
