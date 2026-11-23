@@ -9,7 +9,7 @@ Shortly is a full-stack URL shortener. Its React frontend lets visitors create, 
 - Open a short link to redirect to its destination and increment its click count.
 - View all saved links, their destinations, creation dates, and click counts.
 - Copy a short link from the creation result or dashboard.
-- Delete a link after confirming the action.
+- Delete a link after confirming the action in the accessible delete modal.
 - View dashboard totals and the most-clicked link.
 - Sort dashboard links by click count; the default list is newest first.
 - Switch the interface between English and Arabic, with left-to-right and right-to-left layout respectively.
@@ -42,8 +42,13 @@ Shortly is a full-stack URL shortener. Its React frontend lets visitors create, 
 ├── frontend/
 │   ├── public/              # Logo and favicon
 │   ├── src/
-│   │   ├── components/      # Dashboard, link card, and empty state
-│   │   ├── services/        # Frontend API requests
+│   │   ├── components/
+│   │   │   ├── ConfirmModal.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── EmptyState.jsx
+│   │   │   └── LinkCard.jsx
+│   │   ├── services/
+│   │   │   └── urls.js     # API requests and URL data normalization
 │   │   ├── App.jsx          # Home view and application navigation
 │   │   ├── translations.js  # English and Arabic interface text
 │   │   └── *.css            # Application styles
@@ -204,9 +209,11 @@ Because listing, creation, and deletion are public, anyone able to reach the API
 ## Frontend behavior and languages
 
 - **Home:** Submit a URL to create a short link. The frontend displays the result and offers a copy action.
-- **Dashboard:** Shows total links, total clicks, the most-clicked link, and each saved link. Link cards show the original and short URL, click count, copy and delete actions. Deletion requires browser confirmation.
+- **URL data flow:** `frontend/src/services/urls.js` is the frontend API layer for loading and deleting links. It normalizes each `GET /api/urls` record into `longUrl`, `shortCode`, `shortUrl`, `clicks`, and `createdAt`, converts missing short URLs and click counts to safe display values, and validates the required URL fields. `Dashboard.jsx` uses this normalized data directly without a second mapping step.
+- **Dashboard:** Shows total links, total clicks, the most-clicked link, and each saved link. Link cards show the original and short URL, click count, copy and delete actions.
+- **Delete confirmation:** The reusable `frontend/src/components/ConfirmModal.jsx` presents an accessible dialog with Cancel and Delete actions. It supports keyboard focus navigation and Escape cancellation. Canceling or dismissing the backdrop closes the modal without deleting.
 - **Ordering:** The dashboard initially uses the API's newest-first order. The sort button switches to descending click-count order; pressing it again restores the default order.
-- **Language and direction:** The language switcher toggles between English and Arabic. The page and dashboard use LTR for English and RTL for Arabic. The selected language is held in application state and is not persisted across reloads.
+- **Language and direction:** The language switcher toggles between English and Arabic. English and Arabic labels include the delete modal, and the page and dashboard use LTR and RTL directions respectively. The modal styling is included in `frontend/src/App.css`. The selected language is held in application state and is not persisted across reloads.
 
 ## Validation and testing
 
