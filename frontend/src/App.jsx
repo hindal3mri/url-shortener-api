@@ -46,7 +46,7 @@ function App() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/urls', {
+      const response = await fetch('https://url-shortener-api-production-18900921.up.railway.app/api/urls', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
