@@ -1,4 +1,4 @@
-const URLS_ENDPOINT = '/api/urls'
+const URLS_ENDPOINT = 'https://url-shortener-api-production-18900921.up.railway.app/api/urls'
 
 export async function getLinks() {
   const response = await fetch(URLS_ENDPOINT)
